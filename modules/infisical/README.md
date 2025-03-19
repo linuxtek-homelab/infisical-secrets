@@ -1,1 +1,0 @@
-https://registry.terraform.io/providers/Telmate/proxmox/latest/docs/guides/cloud_init

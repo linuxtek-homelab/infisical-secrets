@@ -1,0 +1,58 @@
+---
+# Based on: https://infisical.com/docs/self-hosting/deployment-options/standalone-infisical
+# Docker Compose: https://infisical.com/docs/self-hosting/deployment-options/docker-compose
+# Infisical Environment Configuration: https://infisical.com/docs/self-hosting/configuration/envars
+
+- name: Create the infisical directory to store the persistent data for the containers
+  ansible.builtin.file:
+    path: "{{ full_dir_path }}"
+    state: directory
+    mode: '0755'
+    owner: docker
+    group: docker
+  loop:
+    - "{{ infisical_persistent_volume }}/data/infisical-postgresql"
+    - "{{ infisical_persistent_volume }}/data/infisical-redis"
+  loop_control:
+    loop_var: full_dir_path
+
+- name: Generate Infisical Encryption Key
+  ansible.builtin.command: openssl rand -hex 16
+  register: encryption_key
+
+- name: Generate Infisical Auth Secret
+  ansible.builtin.command: openssl rand -base64 32
+  register: auth_secret
+
+# Create environment file based on template: https://raw.githubusercontent.com/Infisical/infisical/main/.env.example
+
+- name: Create environment configuration file from template using imported variables
+  ansible.builtin.template:
+    src: ../templates/env.j2
+    dest: "{{ infisical_persistent_volume }}/.env"
+    owner: docker
+    group: docker
+    mode: '0644'
+  vars:
+    generated_encryption_key: "{{ encryption_key.stdout }}"
+    generated_auth_secret: "{{ auth_secret.stdout }}"
+
+# Create docker-compose file based on: https://raw.githubusercontent.com/Infisical/infisical/main/docker-compose.prod.yml
+# Modified to store container data in persistent directory: /opt/infisical/data
+
+- name: Create docker-compose file from template
+  ansible.builtin.template:
+    src: ../templates/docker-compose.j2
+    dest: "{{ infisical_persistent_volume }}/docker-compose.prod.yml"
+    owner: docker
+    group: docker
+    mode: '0644'
+
+- name: Deploy Infisical via Docker Compose
+  ansible.builtin.command:
+    cmd: "docker compose -f docker-compose.prod.yml up -d"
+    chdir: "{{ infisical_persistent_volume }}"
+
+- name: Verify running containers
+  ansible.builtin.command:
+    cmd: docker ps

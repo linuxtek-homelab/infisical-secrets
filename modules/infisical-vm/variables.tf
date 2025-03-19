@@ -1,39 +1,61 @@
-variable "proxmox_api_url" {
-  description = "URL to Proxmox API"
+variable "environment" {
+  description = "Environment name to add to front of VM name"
   type        = string
-  # default = "https://proxmox-server01.example.com:8006/api2/json"
+  default     = "prod"
 }
 
-variable "proxmox_api_token_id" {
-  description = "Proxmox API Token ID"
+variable "proxmox_target_node" {
+  description = "Target Proxmox node to create the virtual machine on"
+  type        = string
+  default     = "pve1"
+}
+
+variable "template_clone" {
+  description = "Virtual machine template name to clone to create the virtual machine"
   type        = string
 }
 
-variable "proxmox_api_token_secret" {
-  description = "Proxmox API Token Secret/Password"
+variable "vm_name" {
+  description = "Name of the virtual machine to create"
+  type        = string
+  default     = "infisical"
+}
+
+variable "vm_description" {
+  description = "Description of the virtual machine to create"
   type        = string
 }
 
-variable "tf_state_local" {
-  description = "Local file location to the Terraform state file and lock file"
-  type        = string
+variable "vm_cores" {
+  description = "Number of vCPU cores for the virtual machine"
+  default     = 2
+}
+
+variable "vm_memory" {
+  description = "Amount of RAM for the virtual machine"
+  default     = 4096
 }
 
 variable "vm_disk_storage" {
   description = "Location to store VM disk"
   type        = string
-  default     = "local-lvm"
+  default     = "local"
+}
+
+variable "vm_disk_size" {
+  description = "Size of hard disk for VM"
+  type        = string
+  default     = "32G"
 }
 
 variable "vm_ipv4_address" {
-  description = "Static IPv4 Address to set"
+  description = "Static IPv4 Address/Mask to set"
   type        = string
 }
 
 variable "vm_ipv4_subnet_mask" {
   description = "Subnet Mask for static IP"
   type        = string
-  default     = "24"
 }
 
 variable "vm_ipv4_gateway" {

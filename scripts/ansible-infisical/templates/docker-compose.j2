@@ -51,8 +51,16 @@ services:
 volumes:
   pg_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: {{ infisical_persistent_volume }}/data/infisical-postgresql
   redis_data:
     driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: {{ infisical_persistent_volume }}/data/infisical-redis
 
 networks:
   infisical:
