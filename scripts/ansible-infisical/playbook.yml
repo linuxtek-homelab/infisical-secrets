@@ -3,15 +3,8 @@
   hosts: all
 
   # vars:
-    # postgres_password: "{{ postgres_password }}"
-    # site_url: "{{ infisical_site_url }}"
-    # infisical_smtp_host: "{{ infisical_smtp_host }}"
-    # infisical_smtp_port: "{{ infisical_smtp_port }}"
-    # infisical_smtp_from_address: "{{ infisical_smtp_from_address }}"
-    # infisical_smtp_from_name: "{{ infisical_smtp_from_name }}"
-    # infisical_smtp_username: "{{ infisical_smtp_username }}"
-    # infisical_smtp_password: "{{ infisical_smtp_password }}"
-    # infisical_persistent_volume: "{{ infisical_persistent_volume }}"
+    # All of the required variables are passed into the Ansible Playbook
+    # through extra_vars in the Terraform module.
 
   become: true
   become_user: root
@@ -19,7 +12,7 @@
   tasks:
     - name: Install Docker
       ansible.builtin.include_tasks:
-        file: "tasks/install_docker.yml"    
+        file: "tasks/install_docker.yml"
 
     - name: Install Infisical
       ansible.builtin.include_tasks:
